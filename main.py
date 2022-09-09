@@ -1,16 +1,23 @@
-# This is a sample Python script.
+from random import sample
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+# Исходный словарь с буквами
+dict_alfas = {"а": 8, "б": 2, "в": 4, "г": 2, "д": 4, "е": 8, "ё": 1, "ж": 1, "з": 2, "и": 5, "й": 1, "к": 4, "л": 4,
+              "м": 3, "н": 5, "о": 10, "п": 4, "р": 5, "с": 5, "т": 5, "у": 4, "ф": 1, "х": 1, "ц": 1, "ч": 1, "ш": 1,
+              "щ": 1, "ъ": 1, "ы": 2, "ь": 2, "э": 1, "ю": 1, "я": 2}
 
 
-# Press the green button in the gutter to run the script.
+def choice_alfas(n:int):
+    """
+    Функция возвращает случайный список из n букв из словаря dict_alfas
+    """
+    s = ''.join([k * v for k, v in dict_alfas.items()])
+    alfas = sample(s, n)
+    return alfas
+
+
+
+
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    print(choice_alfas(7))
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
