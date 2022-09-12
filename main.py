@@ -21,7 +21,12 @@ def choice_letters(n: int):
     Функция возвращает случайный список из n букв из словаря dict_alfas и уменьшает количество букв в словаре
     """
     let_string = ''.join([k * v for k, v in dict_alfas.items()])
-    letters = sample(let_string, n)
+    if len(let_string) == 0:
+        return False
+    elif len(let_string) < n:
+        letters = sample(let_string, len(let_string))
+    else:
+        letters = sample(let_string, n)
     for letter in letters:
         dict_alfas[letter] -= 1
     return letters
@@ -42,28 +47,30 @@ def chek_word(number):
     """
     Функция принимает на вход номер игрока, получает ответ игрока и проверяет валидность слова, что слово
     составлено из букв игрока и отсутствие его в списке использованных слов, если слово уже было или не верно
-    использованы буквы предлагает повторить ход, возвращает валидное слово или False, если игрок ввел неверное слово.
+    использованы буквы, предлагает повторить ход, возвращает валидное слово или False, если игрок ввел неверное слово.
     Также возвращает флаг остановки игры, если пользователь ввел stop или стоп.
     """
     while True:
         word = input('<<< ').lower().strip()
-        if word == 'stop' or word == 'стоп':
+        if word == 'stop':
             return 'stop'
+        check_list = user_list[number][2].copy()
+        flag = False
+        for letter in word:
+            if letter in check_list:
+                check_list.remove(letter)
+            else:
+                print('Вы использовали букву, которой у вас не было, попробуйте еще раз')
+                flag = True
+                break
+        if flag:
+            continue
         if word in used_words:
             print('Такое слово уже было, найдите другое')
             continue
         elif word in valid_words:
-            chek_list = user_list[number][2].copy()
-            for letter in word:
-                if letter in chek_list:
-                    chek_list.remove(letter)
-                else:
-                    print('Вы использовали букву, которой у вас не было, попробуйте еще раз')
-                    break
-            else:
-                used_words.append(word)
-                return word
-            continue
+            used_words.append(word)
+            return word
         return False
 
 
@@ -75,26 +82,25 @@ def game():
     player = 1  # текущий номер игрока
     score = {2: 2, 3: 3, 4: 6, 5: 7, 6: 8, 7: 10, 8: 11}  # словарь с баллами для длины слова
     while is_game:
-        letters = ', '.join(user_list[player][2])
-        print(f'Ходит {user_list[player][0]}. Твои буквы "{letters}"')
+        print(f'Ходит {user_list[player][0]}. Твои буквы "{", ".join(user_list[player][2])}"')
         user_answer = chek_word(player)
         if user_answer and user_answer != 'stop':
             for letter in user_answer:
                 user_list[player][2].remove(letter)
             points = score[len(user_answer)]
-            new_letters = choice_letters(len(user_answer))
-            new_letters_str = ', '.join(new_letters)
-            print(f'Такое слово есть\n{user_list[player][0]} получает {points} баллов\n'
-                  f'Добавляю буквы "{new_letters_str}"')
-            user_list[player][2].extend(new_letters)
             user_list[player][1] += points
+            new_letters = choice_letters(len(user_answer) + 1)
+            print(f'Такое слово есть\n{user_list[player][0]} получает {points} баллов')
         elif user_answer is False:
-            new_letter = choice_letters(1)
-            new_letter_str = ', '.join(new_letter)
-            print(f'Такого слова нет\n{user_list[player][0]} не получает очков\n'
-                  f'Добавляю буквы "{new_letter_str}"')
-            user_list[player][2].extend(new_letter)
+            new_letters = choice_letters(1)
+            print(f'Такого слова нет\n{user_list[player][0]} не получает очков')
         else:
+            break
+        if new_letters:
+            print(f'Добавляю буквы "{", ".join(new_letters)}"')
+            user_list[player][2].extend(new_letters)
+        else:
+            print('Нет больше букв для добавления')
             is_game = False
         player = 2 if player == 1 else 1
 
@@ -103,6 +109,7 @@ def get_winner():
     """
     Функция выявляет победителя или ничью, выводит счет
     """
+    print('Игра окончена')
     if user_list[1][1] > user_list[2][1]:
         winner = 1
     elif user_list[1][1] < user_list[2][1]:
@@ -126,7 +133,6 @@ if __name__ == '__main__':
         user_list[i][2] = choice_letters(7)
     print(f'{user_list[1][0]} vs {user_list[2][0]} раздаю случайные буквы')
     for i in range(1, 3):
-        letters = ', '.join(user_list[i][2])
-        print(f'{user_list[i][0]} - буквы "{letters}"\n')
+        print(f'{user_list[i][0]} - буквы "{", ".join(user_list[i][2])}"\n')
     game()
     get_winner()
