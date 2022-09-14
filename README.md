@@ -1,1 +1,1 @@
-# skypro_lesson_7
+# skypro_scrable
