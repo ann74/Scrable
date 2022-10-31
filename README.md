@@ -1,1 +1,1 @@
-# skypro_scrable
+# scrable game
